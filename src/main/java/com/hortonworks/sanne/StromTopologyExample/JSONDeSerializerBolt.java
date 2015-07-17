@@ -3,6 +3,7 @@ package com.hortonworks.sanne.StromTopologyExample;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,13 +26,18 @@ public class JSONDeSerializerBolt implements IRichBolt {
 
 	OutputCollector _collector;
 	HashMap tupleHash = null;
-	
+	String fieldKeys[] = {"id",
+			"SenderName","SenderSurname","SenderBank","SenderIBAN","SenderSWIFT",
+			"ReceiverName", "ReceiverSurname", "ReceiverBank", "ReceiverIBAN", "ReceiverSWIFT",
+			"AmoutValue", "AmountCurrency", 
+			"DescriptionLine1", "DescriptionLine2"
+		};
 	public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
         _collector = collector;
     }
 	
 	public void declareOutputFields(OutputFieldsDeclarer _declarer) {
-		_declarer.declare(new Fields("id","senderName"));
+		_declarer.declare(new Fields(fieldKeys));
 	}
 
 	public void execute(Tuple _tuple) {
@@ -54,13 +60,30 @@ public class JSONDeSerializerBolt implements IRichBolt {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Tuple Deserializer: " + tupleHash);
-		// System.out.println("Message: \n" + kafkaString);
-		// _collector.ack(_tuple);
 		String id = tupleHash.get("id").toString();
 		String senderName = tupleHash.get("SenderName").toString();
-		// System.out.println("Id-Text: " + test);
-		_collector.emit(new Values(id,senderName));
+		String senderSurname = tupleHash.get("SenderSurname").toString();
+		String senderBank = tupleHash.get("SenderBank").toString();
+		String senderIBAN = tupleHash.get("SenderIBAN").toString();
+		String senderSWIFT = tupleHash.get("SenderSWIFT").toString();
+		String receiverName = tupleHash.get("ReceiverName").toString();
+		String receiverSurname = tupleHash.get("ReceiverSurname").toString();
+		String receiverBank = tupleHash.get("ReceiverBank").toString();
+		String receiverIBAN = tupleHash.get("ReceiverIBAN").toString();
+		String receiverSWIFT = tupleHash.get("ReceiverSWIFT").toString();
+		String amountValue = tupleHash.get("AmountValue").toString();
+		String amountCurrency = tupleHash.get("AmountCurrency").toString();
+		String descriptionLine1 = tupleHash.get("DescriptionLine1").toString();
+		String descriptionLine2 = tupleHash.get("DescriptionLine2").toString();
+		
+		_collector.emit(new Values(
+				id,
+				senderName,senderSurname,senderBank,senderIBAN,senderSWIFT, 
+				receiverName,receiverSurname,receiverBank,receiverIBAN,receiverSWIFT,
+				amountValue,amountCurrency,
+				descriptionLine1,descriptionLine2
+				));
+		
 	}
 	
 
@@ -87,6 +110,8 @@ public class JSONDeSerializerBolt implements IRichBolt {
 		
 		HashMap<String, String> hMap = new HashMap<String, String>();
 		
+		
+		
 		hMap.put("id", jsonObject.get("id").toString());
 		
 		hMap.put("SenderName", jsonSender.get("name").toString());
@@ -95,17 +120,17 @@ public class JSONDeSerializerBolt implements IRichBolt {
 		hMap.put("SenderIBAN", jsonSender.get("IBAN").toString());
 		hMap.put("SenderSWIFT", jsonSender.get("SWIFT").toString());
 		
-		hMap.put("receiverName", jsonReceiver.get("name").toString());
-		hMap.put("receiverSurname", jsonReceiver.get("surname").toString());
-		hMap.put("receiverBank", jsonReceiver.get("bank").toString());
-		hMap.put("receiverIBAN", jsonReceiver.get("IBAN").toString());
-		hMap.put("receiverSWIFT", jsonReceiver.get("SWIFT").toString());
+		hMap.put("ReceiverName", jsonReceiver.get("name").toString());
+		hMap.put("ReceiverSurname", jsonReceiver.get("surname").toString());
+		hMap.put("ReceiverBank", jsonReceiver.get("bank").toString());
+		hMap.put("ReceiverIBAN", jsonReceiver.get("IBAN").toString());
+		hMap.put("ReceiverSWIFT", jsonReceiver.get("SWIFT").toString());
 		
-		hMap.put("amoutValue", jsonAmount.get("value").toString());
-		hMap.put("amountCurrency", jsonAmount.get("currency").toString());
+		hMap.put("AmountValue", jsonAmount.get("value").toString());
+		hMap.put("AmountCurrency", jsonAmount.get("currency").toString());
 		
-		hMap.put("descriptionLine1", jsonDescription.get("line1").toString());
-		hMap.put("descriptionLine2", jsonDescription.get("line2").toString());
+		hMap.put("DescriptionLine1", jsonDescription.get("line1").toString());
+		hMap.put("DescriptionLine2", jsonDescription.get("line2").toString());
 		
 		
 		return hMap;
