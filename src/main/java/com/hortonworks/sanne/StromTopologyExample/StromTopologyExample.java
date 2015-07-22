@@ -56,7 +56,7 @@ public class StromTopologyExample
 		LocalCluster cluster = new LocalCluster();
 		cluster.submitTopology("paymentTopology", stormconf, builder.createTopology());
 		Utils.sleep(60000);
-		cluster.killTopology("paymentsTopology");
+		cluster.killTopology("paymentTopology");
 		cluster.shutdown();
     	
     }
