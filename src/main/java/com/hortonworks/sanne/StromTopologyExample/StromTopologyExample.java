@@ -28,7 +28,7 @@ public class StromTopologyExample
 {
 	// public static final Logger LOG = LoggerFactory.getLogger(StromTopologyExample.class);
 	private static String zkConnString ="localhost:2181";
-	private static String topicName = "cobapayments";
+	private static String topicName = "payments";
 	private static Config stormconf;
 	
 	public static void main( String[] args )
@@ -54,17 +54,15 @@ public class StromTopologyExample
         stormconf.put("hbase.conf", hbConfig);
 	    
 		LocalCluster cluster = new LocalCluster();
-		cluster.submitTopology("cobapayments", stormconf, builder.createTopology());
+		cluster.submitTopology("paymentTopology", stormconf, builder.createTopology());
 		Utils.sleep(60000);
-		cluster.killTopology("cobapayments");
+		cluster.killTopology("paymentsTopology");
 		cluster.shutdown();
     	
     }
 	
 	private static KafkaSpout buildKafkaSpout() {
 		
-		String zkConnString ="localhost:2181";
-		String topicName = "cobapayments";
 			
 		BrokerHosts hosts = new ZkHosts(zkConnString);
 		SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, UUID.randomUUID().toString());
